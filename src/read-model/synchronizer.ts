@@ -82,19 +82,21 @@ export class ReadModelSynchronizer {
   private applyEventToReadModel(event: DomainEvent): void {
     switch (event.eventType) {
       case 'PrinterRegistered':
-        this.applyPrinterRegistered(event as PrinterRegisteredEvent);
+        this.applyPrinterRegistered(event);
         break;
 
       case 'PrintRequested':
-        this.applyPrintRequested(event as PrintRequestedEvent);
+        this.applyPrintRequested(event);
         break;
 
       case 'PrintCompleted':
-        this.applyPrintCompleted(event as PrintCompletedEvent);
+        this.applyPrintCompleted(event);
         break;
 
       default:
-        console.warn(`Unknown event type for read model: ${event.eventType}`);
+        // TypeScript knows this should never happen
+        const exhaustiveCheck: never = event;
+        console.warn(`Unknown event type for read model: ${(exhaustiveCheck as any).eventType}`);
     }
   }
 

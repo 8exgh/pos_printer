@@ -42,19 +42,21 @@ export class WriteModelStateBuilder {
   private applyEvent(state: WriteModelState, event: DomainEvent): void {
     switch (event.eventType) {
       case 'PrinterRegistered':
-        this.applyPrinterRegistered(state, event as PrinterRegisteredEvent);
+        this.applyPrinterRegistered(state, event);
         break;
 
       case 'PrintRequested':
-        this.applyPrintRequested(state, event as PrintRequestedEvent);
+        this.applyPrintRequested(state, event);
         break;
 
       case 'PrintCompleted':
-        this.applyPrintCompleted(state, event as PrintCompletedEvent);
+        this.applyPrintCompleted(state, event);
         break;
 
       default:
-        console.warn(`Unknown event type: ${event.eventType}`);
+        // TypeScript knows this should never happen
+        const exhaustiveCheck: never = event;
+        console.warn(`Unknown event type: ${(exhaustiveCheck as any).eventType}`);
     }
   }
 
