@@ -44,7 +44,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="HTTP Request.print_something | #1">
+  <component name="RunManager" selected="HTTP Request.All in print_something">
     <configuration name="All in print_something" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$PROJECT_DIR$/http/print_something.http">
       <method v="2" />
     </configuration>
@@ -59,9 +59,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="HTTP Request.All in print_something" />
         <item itemvalue="HTTP Request.print_something | #1" />
         <item itemvalue="HTTP Request.register_printer | #1" />
-        <item itemvalue="HTTP Request.All in print_something" />
         <item itemvalue="HTTP Request.All in register_printer" />
       </list>
     </recent_temporary>

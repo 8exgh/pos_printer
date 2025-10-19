@@ -8,23 +8,15 @@ import * as net from 'net';
 export class TSP100Printer {
   /**
    * Convert text to raster bitmap and send to printer
+   * Uses StarTSPImage-compatible format (ESC * r commands)
    */
   async printText(ipAddress: string, port: number, text: string): Promise<boolean> {
     try {
       console.log(`Printing to TSP100 at ${ipAddress}:${port}...`);
+      console.log('Using StarTSPImage raster format (ESC * r)');
 
-      // Try text mode first (more reliable for TSP100)
-      const USE_TEXT_MODE = true;
-
-      let printData: Buffer;
-      if (USE_TEXT_MODE) {
-        printData = this.formatAsTextMode(text);
-        console.log('Using text mode printing');
-      } else {
-        // 1. Convert text to raster format
-        printData = this.convertTextToRaster(text);
-        console.log('Using raster mode printing');
-      }
+      // Convert text to raster format with Star commands
+      const printData = this.convertTextToRaster(text);
 
       console.log(`Sending ${printData.length} bytes to printer`);
 
@@ -33,7 +25,7 @@ export class TSP100Printer {
       console.log('Data preview (hex):', previewBytes.toString('hex').match(/.{1,2}/g)?.join(' '));
       console.log('Data preview (ascii):', this.toAsciiDebug(previewBytes));
 
-      // 2. Send to printer via TCP/IP
+      // Send to printer via TCP/IP
       const success = await this.sendToPrinter(ipAddress, port, printData);
 
       if (success) {
@@ -49,42 +41,6 @@ export class TSP100Printer {
     }
   }
 
-  /**
-   * Format text using Star Line Mode (native to Star TSP100)
-   */
-  private formatAsTextMode(text: string): Buffer {
-    const commands: Buffer[] = [];
-
-    // Star Line Mode commands
-    // Initialize printer (Star specific)
-    commands.push(Buffer.from([0x1B, 0x40])); // ESC @ - Initialize
-
-    // Enable Star Line Mode
-    commands.push(Buffer.from([0x1B, 0x1D, 0x61, 0x00])); // Select Star Line Mode
-
-    // Set international character set (USA)
-    commands.push(Buffer.from([0x1B, 0x52, 0x00])); // ESC R 0
-
-    // Select character code table (PC437)
-    commands.push(Buffer.from([0x1B, 0x1D, 0x74, 0x00])); // Select code page
-
-    // Emphasized mode ON (makes text more visible)
-    commands.push(Buffer.from([0x1B, 0x45])); // ESC E
-
-    // Print the text
-    commands.push(Buffer.from(text, 'utf8'));
-
-    // Line feeds (Star Line Mode uses LF)
-    commands.push(Buffer.from([0x0A, 0x0A, 0x0A])); // LF x3
-
-    // Emphasized mode OFF
-    commands.push(Buffer.from([0x1B, 0x46])); // ESC F
-
-    // Cut paper (Star Line Mode command)
-    commands.push(Buffer.from([0x1B, 0x64, 0x02])); // ESC d 2 - Feed and cut
-
-    return Buffer.concat(commands);
-  }
 
   /**
    * Convert text to raster bitmap format
@@ -125,8 +81,8 @@ export class TSP100Printer {
     // Convert to monochrome bitmap
     const bitmap = this.convertToMonochrome(imageData, width, height);
 
-    // Format as ESC/POS raster commands
-    return this.formatAsESCPOS(bitmap, width, height);
+    // Format as StarTSPImage raster commands
+    return this.formatAsStarRaster(bitmap, width, height);
   }
 
   /**
@@ -159,58 +115,27 @@ export class TSP100Printer {
   }
 
   /**
-   * Format bitmap data as Star Raster Mode commands for TSP100
+   * Format bitmap data using StarTSPImage format (ESC * r commands)
+   * This is the exact format that works with TSP100 printers
    */
-  private formatAsESCPOS(bitmap: Buffer, width: number, height: number): Buffer {
-    const commands: Buffer[] = [];
-
-    // Initialize printer
-    commands.push(Buffer.from([0x1B, 0x40])); // ESC @
-
-    // Select Star Raster Mode
-    commands.push(Buffer.from([0x1B, 0x1D, 0x61, 0x01])); // ESC GS a 1
-
+  private formatAsStarRaster(bitmap: Buffer, width: number, height: number): Buffer {
     const bytesPerLine = Math.ceil(width / 8);
 
-    // Star Raster Graphics command: ESC GS ( A
-    // Send entire image at once
-    const dataSize = bitmap.length + 10;
-    const cmd = Buffer.alloc(dataSize + 4);
+    // Calculate page length (total bitmap size)
+    const pageLength = height * bytesPerLine;
+    const pageLengthLow = pageLength & 0xFF;
+    const pageLengthHigh = (pageLength >> 8) & 0xFF;
 
-    let pos = 0;
-    cmd[pos++] = 0x1B; // ESC
-    cmd[pos++] = 0x1D; // GS
-    cmd[pos++] = 0x28; // (
-    cmd[pos++] = 0x41; // A
-
-    // Data length (4 bytes, little endian)
-    const len = dataSize;
-    cmd[pos++] = len & 0xFF;
-    cmd[pos++] = (len >> 8) & 0xFF;
-    cmd[pos++] = (len >> 16) & 0xFF;
-    cmd[pos++] = (len >> 24) & 0xFF;
-
-    // Function number (0x30 = print raster)
-    cmd[pos++] = 0x30;
-    cmd[pos++] = 0x00;
-
-    // Image width in bytes
-    cmd[pos++] = bytesPerLine & 0xFF;
-    cmd[pos++] = (bytesPerLine >> 8) & 0xFF;
-
-    // Image height in dots
-    cmd[pos++] = height & 0xFF;
-    cmd[pos++] = (height >> 8) & 0xFF;
-
-    // Copy bitmap data
-    bitmap.copy(cmd, pos);
-
-    commands.push(cmd);
-
-    // Feed and cut
-    commands.push(Buffer.from([0x1B, 0x64, 0x02])); // ESC d 2
-
-    return Buffer.concat(commands);
+    // Build command sequence exactly like StarTSPImage
+    return Buffer.concat([
+      // NO ESC @ initialization - start directly with raster commands
+      Buffer.from([0x1B, 0x2A, 0x72, 0x41]),        // ESC * r A - Start raster data transfer
+      Buffer.from([0x1B, 0x2A, 0x72, 0x50]),        // ESC * r P - Set page length
+      Buffer.from([0x30, 0x00]),                     // "0" NUL - Parameters
+      Buffer.from([pageLengthLow, pageLengthHigh, 0x00]), // Page length (3 bytes)
+      bitmap,                                        // Raster bitmap data
+      Buffer.from([0x1B, 0x2A, 0x72, 0x42])         // ESC * r B - End raster
+    ]);
   }
 
   /**
