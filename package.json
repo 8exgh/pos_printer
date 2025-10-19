@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "init-db": "ts-node scripts/init-databases.ts",
+    "test-printer": "ts-node scripts/test-printer.ts",
     "start:api": "ts-node src/api/server.ts",
     "start:processor": "ts-node src/processor/background-processor.ts",
     "dev:api": "ts-node-dev --respawn src/api/server.ts",

@@ -28,6 +28,11 @@ export class TSP100Printer {
 
       console.log(`Sending ${printData.length} bytes to printer`);
 
+      // Debug: Show hex dump of first 100 bytes
+      const previewBytes = printData.slice(0, 100);
+      console.log('Data preview (hex):', previewBytes.toString('hex').match(/.{1,2}/g)?.join(' '));
+      console.log('Data preview (ascii):', this.toAsciiDebug(previewBytes));
+
       // 2. Send to printer via TCP/IP
       const success = await this.sendToPrinter(ipAddress, port, printData);
 
@@ -45,25 +50,38 @@ export class TSP100Printer {
   }
 
   /**
-   * Format text using simple text mode (more reliable for testing)
+   * Format text using Star Line Mode (native to Star TSP100)
    */
   private formatAsTextMode(text: string): Buffer {
     const commands: Buffer[] = [];
 
-    // Initialize printer
-    commands.push(Buffer.from([0x1B, 0x40])); // ESC @
+    // Star Line Mode commands
+    // Initialize printer (Star specific)
+    commands.push(Buffer.from([0x1B, 0x40])); // ESC @ - Initialize
 
-    // Set to use Star Line Mode (more reliable for Star printers)
-    commands.push(Buffer.from([0x1B, 0x1D, 0x61, 0x01])); // Select Star Line Mode
+    // Enable Star Line Mode
+    commands.push(Buffer.from([0x1B, 0x1D, 0x61, 0x00])); // Select Star Line Mode
+
+    // Set international character set (USA)
+    commands.push(Buffer.from([0x1B, 0x52, 0x00])); // ESC R 0
+
+    // Select character code table (PC437)
+    commands.push(Buffer.from([0x1B, 0x1D, 0x74, 0x00])); // Select code page
+
+    // Emphasized mode ON (makes text more visible)
+    commands.push(Buffer.from([0x1B, 0x45])); // ESC E
 
     // Print the text
     commands.push(Buffer.from(text, 'utf8'));
 
-    // Line feeds
-    commands.push(Buffer.from([0x0A, 0x0A, 0x0A, 0x0A])); // LF x4
+    // Line feeds (Star Line Mode uses LF)
+    commands.push(Buffer.from([0x0A, 0x0A, 0x0A])); // LF x3
 
-    // Cut paper (Star command)
-    commands.push(Buffer.from([0x1B, 0x64, 0x03])); // ESC d 3
+    // Emphasized mode OFF
+    commands.push(Buffer.from([0x1B, 0x46])); // ESC F
+
+    // Cut paper (Star Line Mode command)
+    commands.push(Buffer.from([0x1B, 0x64, 0x02])); // ESC d 2 - Feed and cut
 
     return Buffer.concat(commands);
   }
@@ -141,42 +159,74 @@ export class TSP100Printer {
   }
 
   /**
-   * Format bitmap data as ESC/POS raster commands for TSP100
+   * Format bitmap data as Star Raster Mode commands for TSP100
    */
   private formatAsESCPOS(bitmap: Buffer, width: number, height: number): Buffer {
     const commands: Buffer[] = [];
 
-    // ESC @ - Initialize printer
-    commands.push(Buffer.from([0x1B, 0x40]));
+    // Initialize printer
+    commands.push(Buffer.from([0x1B, 0x40])); // ESC @
 
-    // Raster bit image command - use GS v 0 (standard ESC/POS)
+    // Select Star Raster Mode
+    commands.push(Buffer.from([0x1B, 0x1D, 0x61, 0x01])); // ESC GS a 1
+
     const bytesPerLine = Math.ceil(width / 8);
 
-    // Send entire bitmap as single raster image (more reliable for TSP100)
-    const cmd = Buffer.alloc(8 + bitmap.length);
+    // Star Raster Graphics command: ESC GS ( A
+    // Send entire image at once
+    const dataSize = bitmap.length + 10;
+    const cmd = Buffer.alloc(dataSize + 4);
 
-    cmd[0] = 0x1D; // GS
-    cmd[1] = 0x76; // v
-    cmd[2] = 0x30; // 0 (ASCII '0')
-    cmd[3] = 0x00; // m = 0 (normal mode)
+    let pos = 0;
+    cmd[pos++] = 0x1B; // ESC
+    cmd[pos++] = 0x1D; // GS
+    cmd[pos++] = 0x28; // (
+    cmd[pos++] = 0x41; // A
 
-    // Width in bytes (xL, xH) - little endian
-    cmd[4] = bytesPerLine & 0xFF;
-    cmd[5] = (bytesPerLine >> 8) & 0xFF;
+    // Data length (4 bytes, little endian)
+    const len = dataSize;
+    cmd[pos++] = len & 0xFF;
+    cmd[pos++] = (len >> 8) & 0xFF;
+    cmd[pos++] = (len >> 16) & 0xFF;
+    cmd[pos++] = (len >> 24) & 0xFF;
 
-    // Height in dots (yL, yH) - little endian
-    cmd[6] = height & 0xFF;
-    cmd[7] = (height >> 8) & 0xFF;
+    // Function number (0x30 = print raster)
+    cmd[pos++] = 0x30;
+    cmd[pos++] = 0x00;
 
-    // Copy entire bitmap data
-    bitmap.copy(cmd, 8);
+    // Image width in bytes
+    cmd[pos++] = bytesPerLine & 0xFF;
+    cmd[pos++] = (bytesPerLine >> 8) & 0xFF;
+
+    // Image height in dots
+    cmd[pos++] = height & 0xFF;
+    cmd[pos++] = (height >> 8) & 0xFF;
+
+    // Copy bitmap data
+    bitmap.copy(cmd, pos);
 
     commands.push(cmd);
 
-    // Feed paper and cut (Star TSP100 specific)
-    commands.push(Buffer.from([0x1B, 0x64, 0x03])); // ESC d 3 - Feed and cut paper
+    // Feed and cut
+    commands.push(Buffer.from([0x1B, 0x64, 0x02])); // ESC d 2
 
     return Buffer.concat(commands);
+  }
+
+  /**
+   * Helper to show ASCII representation for debugging
+   */
+  private toAsciiDebug(buffer: Buffer): string {
+    let result = '';
+    for (let i = 0; i < buffer.length; i++) {
+      const byte = buffer[i];
+      if (byte >= 32 && byte <= 126) {
+        result += String.fromCharCode(byte);
+      } else {
+        result += '.';
+      }
+    }
+    return result;
   }
 
   /**
@@ -192,11 +242,19 @@ export class TSP100Printer {
 
       client.connect(port, ipAddress, () => {
         console.log(`Connected to printer at ${ipAddress}:${port}`);
-        client.write(data);
+        client.write(data, (err) => {
+          if (err) {
+            console.error('Write error:', err);
+          } else {
+            console.log('Data written to socket');
+          }
+        });
       });
 
       client.on('data', (response) => {
-        console.log('Printer response received');
+        console.log('Printer response received:', response.length, 'bytes');
+        console.log('Response (hex):', response.toString('hex').match(/.{1,2}/g)?.join(' '));
+        console.log('Response (ascii):', this.toAsciiDebug(response));
         success = true;
         client.destroy();
       });
