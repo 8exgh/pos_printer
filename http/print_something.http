@@ -1,0 +1,8 @@
+POST http://localhost:3000/commands/print-text
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+
+{
+  "printerName": "main-printer",
+  "text": "Hello from POS!\nOrder #12345"
+}

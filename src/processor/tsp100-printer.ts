@@ -13,11 +13,23 @@ export class TSP100Printer {
     try {
       console.log(`Printing to TSP100 at ${ipAddress}:${port}...`);
 
-      // 1. Convert text to raster format
-      const rasterData = this.convertTextToRaster(text);
+      // Try text mode first (more reliable for TSP100)
+      const USE_TEXT_MODE = true;
+
+      let printData: Buffer;
+      if (USE_TEXT_MODE) {
+        printData = this.formatAsTextMode(text);
+        console.log('Using text mode printing');
+      } else {
+        // 1. Convert text to raster format
+        printData = this.convertTextToRaster(text);
+        console.log('Using raster mode printing');
+      }
+
+      console.log(`Sending ${printData.length} bytes to printer`);
 
       // 2. Send to printer via TCP/IP
-      const success = await this.sendToPrinter(ipAddress, port, rasterData);
+      const success = await this.sendToPrinter(ipAddress, port, printData);
 
       if (success) {
         console.log('✓ Print job sent successfully');
@@ -30,6 +42,30 @@ export class TSP100Printer {
       console.error('Print error:', error);
       return false;
     }
+  }
+
+  /**
+   * Format text using simple text mode (more reliable for testing)
+   */
+  private formatAsTextMode(text: string): Buffer {
+    const commands: Buffer[] = [];
+
+    // Initialize printer
+    commands.push(Buffer.from([0x1B, 0x40])); // ESC @
+
+    // Set to use Star Line Mode (more reliable for Star printers)
+    commands.push(Buffer.from([0x1B, 0x1D, 0x61, 0x01])); // Select Star Line Mode
+
+    // Print the text
+    commands.push(Buffer.from(text, 'utf8'));
+
+    // Line feeds
+    commands.push(Buffer.from([0x0A, 0x0A, 0x0A, 0x0A])); // LF x4
+
+    // Cut paper (Star command)
+    commands.push(Buffer.from([0x1B, 0x64, 0x03])); // ESC d 3
+
+    return Buffer.concat(commands);
   }
 
   /**
@@ -113,37 +149,32 @@ export class TSP100Printer {
     // ESC @ - Initialize printer
     commands.push(Buffer.from([0x1B, 0x40]));
 
-    // Raster bit image command for each line
+    // Raster bit image command - use GS v 0 (standard ESC/POS)
     const bytesPerLine = Math.ceil(width / 8);
 
-    for (let y = 0; y < height; y++) {
-      // GS v 0 - Print raster bit image
-      // Format: GS v 0 m xL xH yL yH d1...dk
-      const cmd = Buffer.alloc(8 + bytesPerLine);
+    // Send entire bitmap as single raster image (more reliable for TSP100)
+    const cmd = Buffer.alloc(8 + bitmap.length);
 
-      cmd[0] = 0x1D; // GS
-      cmd[1] = 0x76; // v
-      cmd[2] = 0x30; // 0
-      cmd[3] = 0x00; // Normal (m = 0)
+    cmd[0] = 0x1D; // GS
+    cmd[1] = 0x76; // v
+    cmd[2] = 0x30; // 0 (ASCII '0')
+    cmd[3] = 0x00; // m = 0 (normal mode)
 
-      // Width in bytes (xL, xH)
-      cmd[4] = bytesPerLine & 0xFF;
-      cmd[5] = (bytesPerLine >> 8) & 0xFF;
+    // Width in bytes (xL, xH) - little endian
+    cmd[4] = bytesPerLine & 0xFF;
+    cmd[5] = (bytesPerLine >> 8) & 0xFF;
 
-      // Height (1 line = yL, yH)
-      cmd[6] = 0x01;
-      cmd[7] = 0x00;
+    // Height in dots (yL, yH) - little endian
+    cmd[6] = height & 0xFF;
+    cmd[7] = (height >> 8) & 0xFF;
 
-      // Copy bitmap data for this line
-      const lineStart = y * bytesPerLine;
-      bitmap.copy(cmd, 8, lineStart, lineStart + bytesPerLine);
+    // Copy entire bitmap data
+    bitmap.copy(cmd, 8);
 
-      commands.push(cmd);
-    }
+    commands.push(cmd);
 
-    // Line feed and cut paper
-    commands.push(Buffer.from([0x0A, 0x0A, 0x0A])); // LF x3
-    commands.push(Buffer.from([0x1B, 0x64, 0x02])); // Cut paper
+    // Feed paper and cut (Star TSP100 specific)
+    commands.push(Buffer.from([0x1B, 0x64, 0x03])); // ESC d 3 - Feed and cut paper
 
     return Buffer.concat(commands);
   }

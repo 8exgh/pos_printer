@@ -1,0 +1,2 @@
+GET http://localhost:3000/queries/print-queue
+X-API-Key: dev-api-key-change-in-production

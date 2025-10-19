@@ -1,3 +1,325 @@
+POST http://localhost:3000/commands/print-text
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 78
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "printerName": "main-printer",
+  "text": "Hello from POS!\nOrder #12345"
+}
+
+<> 2025-10-18T192145.200.json
+
+###
+
+POST http://localhost:3000/commands/print-text
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 78
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "printerName": "main-printer",
+  "text": "Hello from POS!\nOrder #12345"
+}
+
+<> 2025-10-18T191545.200.json
+
+###
+
+POST http://localhost:3000/commands/print-text
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 78
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "printerName": "main-printer",
+  "text": "Hello from POS!\nOrder #12345"
+}
+
+<> 2025-10-18T191544.200.json
+
+###
+
+POST http://localhost:3000/commands/print-text
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 78
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "printerName": "main-printer",
+  "text": "Hello from POS!\nOrder #12345"
+}
+
+<> 2025-10-18T191527.200.json
+
+###
+
+POST http://localhost:3000/commands/print-text
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 78
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "printerName": "main-printer",
+  "text": "Hello from POS!\nOrder #12345"
+}
+
+<> 2025-10-18T191408.200.json
+
+###
+
+POST http://localhost:3000/commands/register-printer
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 75
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "name": "main-printer",
+  "ipAddress": "192.168.4.62",
+  "port": 9100
+}
+
+<> 2025-10-18T191404.200.json
+
+###
+
+POST http://localhost:3000/commands/print-text
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 78
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "printerName": "main-printer",
+  "text": "Hello from POS!\nOrder #12345"
+}
+
+<> 2025-10-18T190232.200.json
+
+###
+
+POST http://localhost:3000/commands/register-printer
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 73
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "name": "main-printer",
+  "ipAddress": "10.0.4.130",
+  "port": 9100
+}
+
+<> 2025-10-18T190225.200.json
+
+###
+
+POST http://localhost:3000/commands/register-printer
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 73
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "name": "main-printer",
+  "ipAddress": "10.0.4.130",
+  "port": 9100
+}
+
+<> 2025-10-18T185951.422.json
+
+###
+
+POST http://localhost:3000/commands/print-text
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 78
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "printerName": "main-printer",
+  "text": "Hello from POS!\nOrder #12345"
+}
+
+<> 2025-10-18T185934.404.json
+
+###
+
+POST http://localhost:3000/commands/print-text
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 78
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "printerName": "main-printer",
+  "text": "Hello from POS!\nOrder #12345"
+}
+
+<> 2025-10-18T185909.404.json
+
+###
+
+POST http://localhost:3000/commands/register-printer
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 73
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "name": "main-printer",
+  "ipAddress": "10.0.4.130",
+  "port": 9100
+}
+
+<> 2025-10-18T185904.422.json
+
+###
+
+POST http://localhost:3000/commands/print-text
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 78
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "printerName": "main-printer",
+  "text": "Hello from POS!\nOrder #12345"
+}
+
+<> 2025-10-18T184456.200.json
+
+###
+
+POST http://localhost:3000/commands/register-printer
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 72
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "name": "main-printer",
+  "ipAddress": "10.0.4.62",
+  "port": 9100
+}
+
+<> 2025-10-18T184441.200.json
+
+###
+
+POST http://localhost:3000/commands/print-text
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 78
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "printerName": "main-printer",
+  "text": "Hello from POS!\nOrder #12345"
+}
+
+<> 2025-10-18T184152.200.json
+
+###
+
+POST http://localhost:3000/commands/print-text
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 78
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "printerName": "main-printer",
+  "text": "Hello from POS!\nOrder #12345"
+}
+
+<> 2025-10-18T184150.200.json
+
+###
+
+GET http://localhost:3000/queries/print-queue
+X-API-Key: dev-api-key-change-in-production
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2025-10-18T184128.200.json
+
+###
+
+POST http://localhost:3000/commands/print-text
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 78
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "printerName": "main-printer",
+  "text": "Hello from POS!\nOrder #12345"
+}
+
+<> 2025-10-18T183119.200.json
+
+###
+
+POST http://localhost:3000/commands/register-printer
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 75
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "name": "main-printer",
+  "ipAddress": "192.168.4.62",
+  "port": 9100
+}
+
+<> 2025-10-18T182948.200.json
+
+###
+
 POST http://localhost:3000/commands/register-printer
 X-API-Key: dev-api-key-change-in-production
 Content-Type: application/json

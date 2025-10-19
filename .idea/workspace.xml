@@ -26,6 +26,9 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "HTTP Request.All in print_something.executor": "Run",
+    "HTTP Request.All in register_printer.executor": "Run",
+    "HTTP Request.print_something | #1.executor": "Run",
     "HTTP Request.register_printer | #1.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -41,13 +44,25 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="HTTP Request.print_something | #1">
+    <configuration name="All in print_something" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$PROJECT_DIR$/http/print_something.http">
+      <method v="2" />
+    </configuration>
+    <configuration name="All in register_printer" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$PROJECT_DIR$/http/register_printer.http">
+      <method v="2" />
+    </configuration>
+    <configuration name="print_something | #1" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/print_something.http" executionIdentifier="#1" runType="Run single request">
+      <method v="2" />
+    </configuration>
     <configuration name="register_printer | #1" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/register_printer.http" executionIdentifier="#1" runType="Run single request">
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="HTTP Request.print_something | #1" />
         <item itemvalue="HTTP Request.register_printer | #1" />
+        <item itemvalue="HTTP Request.All in print_something" />
+        <item itemvalue="HTTP Request.All in register_printer" />
       </list>
     </recent_temporary>
   </component>
@@ -65,8 +80,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1760826770584</updated>
-      <workItem from="1760826771677" duration="2308000" />
-      <workItem from="1760831364935" duration="2248000" />
+      <workItem from="1760826771677" duration="2541000" />
     </task>
     <servers />
   </component>
