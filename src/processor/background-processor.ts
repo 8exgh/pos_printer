@@ -149,7 +149,7 @@ class BackgroundProcessor {
         throw new Error(`API returned ${response.status}: ${error}`);
       }
 
-      const result = await response.json();
+      const result = await response.json() as { success: boolean; eventId: string };
       console.log(`Marked complete (event: ${result.eventId})`);
     } catch (error) {
       console.error('Failed to mark print complete:', error);

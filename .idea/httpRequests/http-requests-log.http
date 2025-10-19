@@ -1,0 +1,18 @@
+POST http://localhost:3000/commands/register-printer
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+Content-Length: 76
+User-Agent: IntelliJ HTTP Client/WebStorm 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "name": "main-printer",
+  "ipAddress": "192.168.1.100",
+  "port": 9100
+}
+
+<> 2025-10-18T182622.200.json
+
+###
+

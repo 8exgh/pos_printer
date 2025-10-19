@@ -1,0 +1,9 @@
+POST http://localhost:3000/commands/register-printer
+X-API-Key: dev-api-key-change-in-production
+Content-Type: application/json
+
+{
+  "name": "main-printer",
+  "ipAddress": "192.168.4.62",
+  "port": 9100
+}

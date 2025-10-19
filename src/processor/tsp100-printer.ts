@@ -1,4 +1,4 @@
-import { createCanvas } from 'canvas';
+import { createCanvas, ImageData } from 'canvas';
 import * as net from 'net';
 
 /**
