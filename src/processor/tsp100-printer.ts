@@ -78,6 +78,18 @@ export class TSP100Printer {
     // Get image data
     const imageData = ctx.getImageData(0, 0, width, height);
 
+    // Debug: Check first few pixels to see what Canvas actually rendered
+    console.log('Canvas debug - First 10 pixels (RGBA):');
+    for (let i = 0; i < 40; i += 4) {
+      const r = imageData.data[i];
+      const g = imageData.data[i + 1];
+      const b = imageData.data[i + 2];
+      const a = imageData.data[i + 3];
+      if (i < 40) {
+        console.log(`  Pixel ${i/4}: R=${r} G=${g} B=${b} A=${a}`);
+      }
+    }
+
     // Convert to monochrome bitmap
     const bitmap = this.convertToMonochrome(imageData, width, height);
 
@@ -91,6 +103,7 @@ export class TSP100Printer {
   private convertToMonochrome(imageData: ImageData, width: number, height: number): Buffer {
     const bytesPerLine = Math.ceil(width / 8);
     const bitmap = Buffer.alloc(bytesPerLine * height);
+    let blackPixelCount = 0;
 
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
@@ -107,8 +120,24 @@ export class TSP100Printer {
           const byteIndex = y * bytesPerLine + Math.floor(x / 8);
           const bitIndex = 7 - (x % 8);
           bitmap[byteIndex] |= (1 << bitIndex);
+          blackPixelCount++;
         }
       }
+    }
+
+    console.log(`Bitmap conversion: ${blackPixelCount} black pixels out of ${width * height} total`);
+
+    // If bitmap is completely blank, add a test pattern so something prints
+    if (blackPixelCount === 0) {
+      console.warn('⚠ WARNING: Bitmap is completely blank! Adding test rectangle...');
+      // Draw a black rectangle (10 lines tall, starting at line 5, full width for 30 bytes)
+      for (let y = 5; y < 15; y++) {
+        for (let x = 1; x < 31; x++) {
+          const byteIndex = y * bytesPerLine + x;
+          bitmap[byteIndex] = 0xFF; // All 8 pixels black
+        }
+      }
+      console.log('Added test rectangle to bitmap');
     }
 
     return bitmap;
